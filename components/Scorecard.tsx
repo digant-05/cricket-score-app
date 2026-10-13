@@ -1,0 +1,22 @@
+import type { ScorecardData, ScorecardInnings } from "@/lib/scorecard";
+
+const overText = (legal: number) => `${Math.floor(legal / 6)}.${legal % 6}`;
+const rate = (runs: number, balls: number) => balls ? (runs * 6 / balls).toFixed(2) : "0.00";
+
+function InningsCard({ innings, match, number }: { innings: ScorecardInnings; match: ScorecardData; number: number }) {
+  const bowlingTeam = match.teams.find(team => team !== innings.batting) || "Opposition";
+  return <section className="panel detail-panel team-scorecard">
+    <div className="scorecard-innings-head"><div><div className="eyebrow">INNINGS {number}</div><h2>{innings.batting}</h2></div><strong>{innings.runs}-{innings.wickets}<small> ({overText(innings.legal)} Overs · RR {rate(innings.runs, innings.legal)})</small></strong></div>
+    {innings.target !== undefined && <div className="scorecard-target">Target: {innings.target} runs</div>}
+    <div className="table-scroll"><table><thead><tr><th>BATTER</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>{innings.batters.filter(player => player.dismissal !== "did not bat").map(player => <tr key={player.name}><td><b>{player.name}</b><small>{player.dismissal}</small></td><td><b>{player.runs}</b></td><td>{player.balls}</td><td>{player.fours}</td><td>{player.sixes}</td><td>{player.balls ? (player.runs * 100 / player.balls).toFixed(2) : "—"}</td></tr>)}<tr className="extras-row"><td><b>Extras</b></td><td colSpan={5}><b>{innings.extras.total}</b> <small>(b {innings.extras.byes}, lb {innings.extras.legByes}, w {innings.extras.wides}, nb {innings.extras.noBalls})</small></td></tr><tr className="score-total-row"><td><b>Total</b></td><td colSpan={5}><b>{innings.runs}-{innings.wickets}</b> ({overText(innings.legal)} Overs, RR: {rate(innings.runs, innings.legal)})</td></tr>{innings.yetToBat.length > 0 && <tr className="yet-to-bat-row"><td><b>Yet to Bat</b></td><td colSpan={5}>{innings.yetToBat.join(", ")}</td></tr>}</tbody></table></div>
+    <h3 className="scorecard-subhead">{bowlingTeam} bowling</h3><div className="table-scroll"><table><thead><tr><th>BOWLER</th><th>O</th><th>M</th><th>R</th><th>W</th><th>NB</th><th>WD</th><th>ECO</th></tr></thead><tbody>{innings.bowlers.length ? innings.bowlers.map(bowler => <tr key={bowler.name}><td><b>{bowler.name}</b></td><td>{overText(bowler.balls)}</td><td>{bowler.maidens}</td><td>{bowler.runs}</td><td><b>{bowler.wickets}</b></td><td>{bowler.noBalls}</td><td>{bowler.wides}</td><td>{rate(bowler.runs, bowler.balls)}</td></tr>) : <tr><td colSpan={8}>No bowling figures yet.</td></tr>}</tbody></table></div>
+    {innings.fallOfWickets.length > 0 && <><h3 className="scorecard-subhead">Fall of wickets</h3><div className="table-scroll"><table><thead><tr><th>BATTER</th><th>SCORE</th><th>OVER</th></tr></thead><tbody>{innings.fallOfWickets.map((wicket, i) => <tr key={`${wicket.name}-${i}`}><td>{wicket.name}</td><td>{wicket.runs}-{wicket.wickets}</td><td>{wicket.over}</td></tr>)}</tbody></table></div></>}
+  </section>;
+}
+
+export function Scorecard({ match, onShare, shareLabel }: { match: ScorecardData; onShare?: () => void; shareLabel?: string }) {
+  const result = match.status === "complete" ? match.innings.length > 1
+    ? match.innings[1].runs > match.innings[0].runs ? `${match.teams[1]} won by ${10 - match.innings[1].wickets} wickets` : match.innings[1].runs < match.innings[0].runs ? `${match.teams[0]} won by ${match.innings[0].runs - match.innings[1].runs} runs` : "Match tied"
+    : "Match complete" : match.status === "innings-break" ? "Innings break" : "Match in progress";
+  return <div className="scorecard-page"><div className="scorecard-page-head"><div><div className="eyebrow">BOUNDARY · MATCH SCORECARD</div><h1>{match.teams[0]} <em>vs</em> {match.teams[1]}</h1><p>{new Date(match.createdAt).toLocaleDateString()} · {match.oversLimit} overs per side · {result}</p></div>{onShare && <button className="share-scorecard-btn" onClick={onShare}>↗ {shareLabel || "Copy public scorecard link"}</button>}</div>{match.innings.length ? match.innings.map((innings, i) => <InningsCard key={`${innings.batting}-${i}`} innings={innings} match={match} number={i + 1} />) : <div className="panel empty-state"><b>Scorecard is not available yet</b><p>Start the match and score a delivery first.</p></div>}<p className="scorecard-readonly-note">Read-only scorecard · Scoring controls are available only to the scorer.</p></div>;
+}
