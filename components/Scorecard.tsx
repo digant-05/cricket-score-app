@@ -1,4 +1,4 @@
-import type { ScorecardData, ScorecardInnings } from "@/lib/scorecard";
+import type { ScorecardData, ScorecardInnings } from "../lib/scorecard";
 
 const overText = (legal: number) => `${Math.floor(legal / 6)}.${legal % 6}`;
 const rate = (runs: number, balls: number) => balls ? (runs * 6 / balls).toFixed(2) : "0.00";
