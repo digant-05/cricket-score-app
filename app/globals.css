@@ -446,26 +446,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
     outline-offset: 3px;
 }
 
-/* Mobile Responsive */
-@media (max-width: 480px) {
-    .site-shell {
-        padding: 1px 16px;
-    }
-
-    .site-shell .panel {
-        margin: 8vh auto;
-        padding: 26px 22px;
-        border-radius: 12px;
-    }
-
-    .site-shell .panel h1 {
-        font-size: 26px;
-    }
-
-    .site-shell .panel > p {
-        font-size: 14px;
-    }
-}
 .site-header .primary-btn{
     width:auto;
 }
