@@ -307,34 +307,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
     }
 }
 
-/* Main Layout */
-.site-shell {
-    min-height: 100vh;
-    padding: 1px 20px;
-    color: #0f172a;
-}
-
-/* Sign In Panel */
-.site-shell .panel {
-    width: 100%;
-    max-width: 480px;
-    margin: 12vh auto;
-    padding: 36px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
-    box-sizing: border-box;
-}
-
-/* Eyebrow Text */
-.site-shell .eyebrow {
-    margin-bottom: 14px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-}
 
 /* Heading */
 .site-shell .panel h1 {
