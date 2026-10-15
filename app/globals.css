@@ -287,13 +287,13 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 }
 
 /* Mobile Responsive */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
     .site-shell {
         padding: 1px 16px;
     }
 
     .site-shell .panel {
-        margin: 8vh auto;
+        margin: 1vh auto;
         padding: 26px 22px;
         border-radius: 12px;
     }
