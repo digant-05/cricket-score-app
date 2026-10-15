@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Scorecard } from "./Scorecard";
 import { buildScorecard, overText, type ScoreBall, type ScoreMatchInput } from "../lib/scorecard";
 
-type MatchViewInput = ScoreMatchInput & { innings: (ScoreMatchInput["innings"][number] & { bowler?: string })[] };
+type MatchViewInput = Omit<ScoreMatchInput, "status"> & { status: "upcoming" | "live" | "innings-break" | "complete"; scheduledAt?: string; innings: (ScoreMatchInput["innings"][number] & { bowler?: string })[] };
 type Tab = "Live" | "Scorecard" | "Squads" | "Overs" | "Commentary" | "Info";
 const tabs: Tab[] = ["Info", "Live", "Scorecard", "Squads", "Overs", "Commentary"];
 const rate = (runs: number, balls: number) => balls ? (runs * 6 / balls).toFixed(2) : "0.00";
@@ -16,6 +16,7 @@ function ballLabel(ball: ScoreBall) {
   return `${ball.extra === "bye" ? "B" : "Lb"}${ball.runs}`;
 }
 function resultText(match: MatchViewInput) {
+  if (match.status === "upcoming") return "Upcoming fixture";
   if (match.status === "innings-break") return `${match.innings[0]?.batting || match.teams[0]} finished the first innings`;
   if (match.status !== "complete") return "Match in progress";
   if (match.innings.length < 2) return "Innings complete";
@@ -27,8 +28,8 @@ function resultText(match: MatchViewInput) {
 
 export default function PublicMatchView({ match: input }: { match: ScoreMatchInput }) {
   const match = input as MatchViewInput;
-  const [tab, setTab] = useState<Tab>("Live");
-  const scorecard = useMemo(() => buildScorecard(match), [match]);
+  const [tab, setTab] = useState<Tab>(match.status === "upcoming" ? "Info" : "Live");
+  const scorecard = useMemo(() => buildScorecard(input), [input]);
   const innings = match.innings[match.innings.length - 1];
   const inningsCard = scorecard.innings.find(i => i.batting === innings?.batting);
   const currentBatters = inningsCard?.batters.filter(b => b.name === innings?.striker || b.name === innings?.nonStriker) || [];
@@ -52,13 +53,13 @@ export default function PublicMatchView({ match: input }: { match: ScoreMatchInp
     }
     return groups.reverse();
   }, [innings?.balls]);
-  const statusLabel = match.status === "live" ? "LIVE NOW" : match.status === "complete" ? "COMPLETED" : "INNINGS BREAK";
+  const statusLabel = match.status === "upcoming" ? "UPCOMING" : match.status === "live" ? "LIVE NOW" : match.status === "complete" ? "COMPLETED" : "INNINGS BREAK";
   const runsNeeded = match.innings.length > 1 ? Math.max(0, match.innings[0].runs + 1 - innings.runs) : null;
   const ballsLeft = Math.max(0, match.oversLimit * 6 - innings.legal);
 
   return <div className="public-match-view">
     <section className="public-match-hero">
-      <div className="public-match-meta"><span className={`public-live-badge ${match.status}`}>{match.status === "live" && <i />} {statusLabel}</span><span>{match.oversLimit} overs · {new Date(match.createdAt).toLocaleDateString()}</span></div>
+      <div className="public-match-meta"><span className={`public-live-badge ${match.status}`}>{match.status === "live" && <i />} {statusLabel}</span><span>{match.oversLimit} overs · {match.status === "upcoming" && match.scheduledAt ? new Date(match.scheduledAt).toLocaleString() : new Date(match.createdAt).toLocaleDateString()}</span></div>
       <div className="public-innings-score"><span>{innings?.batting || match.teams[0]}</span><strong>{innings?.runs ?? 0}<small>/{innings?.wickets ?? 0}</small></strong><span>({overText(innings?.legal ?? 0)} overs)</span></div>
       <div className="public-match-subline">{match.teams[0]} <b>vs</b> {match.teams[1]} <span>·</span> CRR {rate(innings?.runs ?? 0, innings?.legal ?? 0)}</div>
       {runsNeeded !== null && <div className="public-chase-line">{match.status === "complete" ? resultText(match) : `${innings.batting} need ${runsNeeded} runs from ${ballsLeft} balls`}</div>}

@@ -34,6 +34,15 @@
 .match-status { font-size: 10px; font-weight: 800; letter-spacing: .1em; }
 .match-status.live { color: #c04f42; }
 .match-status.complete { color: #718078; }
+.match-status.upcoming { color:#856b2b; }
+.public-match-filters { display:flex;gap:9px;overflow-x:auto;margin:15px 0 18px;padding-bottom:5px;scrollbar-width:none; }
+.public-match-filters button { display:flex;align-items:center;gap:8px;flex:0 0 auto;padding:9px 12px;border:1px solid #e5eae3;border-radius:999px;background:#fff;color:#6e796f;font:600 11px Arial,sans-serif;cursor:pointer; }
+.public-match-filters button.selected { border-color:#d3e4cb;background:#f1f7ed;color:#315f3d; }
+.public-match-filters button span { display:grid;min-width:18px;height:18px;place-items:center;border-radius:50%;background:#eff2ee;color:#778178;font-size:9px; }
+.schedule-match-btn { min-height:44px;padding:12px 15px;border:1px solid #dfe8d8;border-radius:6px;background:#f3f7ed;color:#46663b;font:800 10px Arial,sans-serif;letter-spacing:.8px;cursor:pointer; }
+.schedule-match-btn:disabled { opacity:.45;cursor:not-allowed; }
+.match-form-actions { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px; }
+@media(max-width:600px){.public-match-filters { gap:6px; }.public-match-filters button { padding:8px 10px;font-size:10px; }.match-form-actions { grid-template-columns:1fr; }}
 @media (max-width: 700px) { .site-shell { padding:0 16px; } .public-match-grid { grid-template-columns: 1fr; } .hero { padding:44px 0 20px; } .hero h1 { letter-spacing:-1.8px; } }
 .public-match-view { padding-bottom: 30px; }
 .public-match-hero { margin: 28px 0 0; padding: 26px 30px 24px; border: 1px solid #e9ece7; border-radius: 15px 15px 0 0; background: linear-gradient(135deg,#fff 0%,#fbfcf9 100%); }
@@ -58,3 +67,6 @@
 .public-delivery-list,.public-info-panel { margin-top:18px;padding:20px; }.public-over-row { display:grid;grid-template-columns:100px 1fr;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #edf0ec; }.public-over-row>div { display:grid;gap:4px; }.public-over-row>div b { font-size:12px; }.public-over-row>div small { color:#879188;font-size:10px; }.public-over-row p { display:flex;flex-wrap:wrap;gap:6px;margin:0; }.public-commentary-row { display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #edf0ec; }.public-commentary-ball { flex:0 0 34px;display:grid;width:34px;height:34px;place-items:center;border-radius:50%;background:#f0f3ee;color:#3e6541;font-size:10px;font-weight:800; }.public-commentary-ball.wicket { background:#fff0ed;color:#c14c40; }.public-commentary-row>div { flex:1;min-width:0; }.public-commentary-row>div b { font-size:12px; }.public-commentary-row>div p { margin:4px 0 0;color:#879188;font-size:10px; }.public-commentary-row>small { color:#89918a;font-size:10px; }
 .public-info-panel h2 em { color:#8d978e;font:500 13px Arial,sans-serif; }.public-info-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:24px; }.public-info-grid>div { display:grid;gap:6px; }.public-info-grid b { font-size:12px; }.public-view-only { margin:22px 0;text-align:center;color:#a1aaa2;font-size:10px; }
 @media(max-width:760px){.public-match-hero{margin-top:16px;padding:20px 17px;border-radius:12px 12px 0 0}.public-match-tabs{gap:21px;padding:0 14px}.public-match-tabs button{padding:14px 1px 12px;font-size:11px}.public-live-layout{grid-template-columns:1fr;gap:12px;margin-top:12px}.public-key-stats{order:2}.public-live-panel{order:1}.public-squad-grid{grid-template-columns:1fr;margin-top:12px}.public-delivery-list,.public-info-panel{margin-top:12px;padding:16px}.public-panel-heading{padding:17px 15px 10px}.public-live-table th:first-child,.public-live-table td:first-child{padding-left:15px}.public-live-table th:last-child,.public-live-table td:last-child{padding-right:15px}.public-over-row{grid-template-columns:72px 1fr;gap:8px}.public-over-row p{gap:4px}.public-over-row p span{min-width:27px;height:27px}.public-info-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.public-innings-score{gap:7px;font-size:14px}.public-innings-score strong{font-size:31px}.public-innings-score strong small{font-size:20px}}
+body iframe#nl-badge-frame {
+    display: none;
+}
