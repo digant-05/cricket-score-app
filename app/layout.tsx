@@ -12,5 +12,5 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Boundary" },
 };
-export const viewport = { width: "device-width", initialScale: "1.0" as unknown as number, themeColor: "#174d37" };
+export const viewport = { width: "device-width", initialScale: "1.0" as unknown as number, maximumScale: "1.0" as unknown as number, userScalable: "0" as unknown as boolean, themeColor: "#174d37" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body><PwaRegister />{children}</body></html>; }
