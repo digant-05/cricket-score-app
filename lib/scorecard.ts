@@ -22,6 +22,7 @@ export type ScoreInningsInput = {
   bowlingSquad: string[];
   dismissedBatters: string[];
   target?: number;
+  superOver?: number;
 };
 
 export type ScoreMatchInput = {
@@ -42,6 +43,7 @@ export type ScorecardInnings = {
   wickets: number;
   legal: number;
   target?: number;
+  superOver?: number;
   batters: BatterLine[];
   bowlers: BowlerLine[];
   extras: { total: number; byes: number; legByes: number; wides: number; noBalls: number };
@@ -117,7 +119,7 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
       line.dismissal = line.name === input.striker || line.name === input.nonStriker ? "not out" : appeared.has(line.name) ? "not out" : "did not bat";
     }
     return {
-      batting: input.batting, runs: input.runs, wickets: input.wickets, legal: input.legal, target: input.target,
+      batting: input.batting, runs: input.runs, wickets: input.wickets, legal: input.legal, target: input.target, superOver: input.superOver,
       batters: Array.from(batterMap.values()), bowlers: Array.from(bowlerMap.values()).filter(bowler => bowler.balls || bowler.runs || bowler.wickets || bowler.wides || bowler.noBalls),
       extras, yetToBat: input.squad.filter(name => !appeared.has(name) && name !== input.striker && name !== input.nonStriker && !input.dismissedBatters.includes(name)), fallOfWickets,
     };

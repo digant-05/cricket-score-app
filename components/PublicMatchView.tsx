@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Scorecard } from "./Scorecard";
 import { buildScorecard, overText, type ScoreBall, type ScoreMatchInput } from "../lib/scorecard";
 
-type MatchViewInput = Omit<ScoreMatchInput, "status"> & { status: "upcoming" | "live" | "innings-break" | "complete"; scheduledAt?: string; innings: (ScoreMatchInput["innings"][number] & { bowler?: string })[] };
+type MatchViewInput = Omit<ScoreMatchInput, "status"> & { status: "upcoming" | "live" | "innings-break" | "complete"; scheduledAt?: string; innings: (ScoreMatchInput["innings"][number] & { bowler?: string; limitBalls?: number; superOver?: number })[] };
 type Tab = "Live" | "Scorecard" | "Squads" | "Overs" | "Commentary" | "Info";
 const tabs: Tab[] = ["Info", "Live", "Scorecard", "Squads", "Overs", "Commentary"];
 const rate = (runs: number, balls: number) => balls ? (runs * 6 / balls).toFixed(2) : "0.00";
@@ -19,10 +19,13 @@ function resultText(match: MatchViewInput) {
   if (match.status === "upcoming") return "Upcoming fixture";
   if (match.status === "innings-break") return `${match.innings[0]?.batting || match.teams[0]} finished the first innings`;
   if (match.status !== "complete") return "Match in progress";
-  if (match.innings.length < 2) return "Innings complete";
-  const first = match.innings[0], second = match.innings[1];
-  if (second.runs > first.runs) return `${second.batting} won by ${Math.max(0, second.squad.length - second.wickets - 1)} wickets`;
-  if (second.runs < first.runs) return `${first.batting} won by ${first.runs - second.runs} runs`;
+  const superOverNumber = Math.max(0, ...match.innings.map(innings => innings.superOver || 0));
+  const superOverPair = superOverNumber ? match.innings.filter(innings => innings.superOver === superOverNumber) : [];
+  const pair = superOverPair.length > 1 ? superOverPair.slice(-2) : match.innings.slice(0, 2);
+  if (pair.length < 2) return "Innings complete";
+  const [first, second] = pair;
+  if (second.runs > first.runs) return `${second.batting} won${second.superOver ? " the Super Over" : ` by ${Math.max(0, second.squad.length - second.wickets - 1)} wickets`}`;
+  if (second.runs < first.runs) return `${first.batting} won${first.superOver ? " the Super Over" : ` by ${first.runs - second.runs} runs`}`;
   return "Match tied";
 }
 
@@ -54,8 +57,9 @@ export default function PublicMatchView({ match: input }: { match: ScoreMatchInp
     return groups.reverse();
   }, [innings?.balls]);
   const statusLabel = match.status === "upcoming" ? "UPCOMING" : match.status === "live" ? "LIVE NOW" : match.status === "complete" ? "COMPLETED" : "INNINGS BREAK";
-  const runsNeeded = match.innings.length > 1 ? Math.max(0, match.innings[0].runs + 1 - innings.runs) : null;
-  const ballsLeft = Math.max(0, match.oversLimit * 6 - innings.legal);
+  const chaseTarget = innings?.target ?? (match.innings.length > 1 && !innings?.superOver ? match.innings[0].runs + 1 : undefined);
+  const runsNeeded = chaseTarget !== undefined ? Math.max(0, chaseTarget - (innings?.runs || 0)) : null;
+  const ballsLeft = Math.max(0, (innings?.limitBalls ?? match.oversLimit * 6) - (innings?.legal || 0));
 
   return <div className="public-match-view">
     <section className="public-match-hero">
@@ -80,7 +84,7 @@ export default function PublicMatchView({ match: input }: { match: ScoreMatchInp
     {tab === "Squads" && <section className="public-squad-grid">{match.teams.map(team => { const teamInnings = match.innings.find(i => i.batting === team); const players = teamInnings?.squad || match.innings.find(i => i.bowlingSquad.includes(team))?.bowlingSquad || []; return <article className="panel public-squad-card" key={team}><div className="eyebrow">SQUAD</div><h2>{team}</h2>{players.map((player, index) => <div className="public-squad-player" key={player}><span>{String(index + 1).padStart(2, "0")}</span>{player}{teamInnings?.dismissedBatters.includes(player) && <small>OUT</small>}</div>)}</article>; })}</section>}
     {tab === "Overs" && <section className="panel public-delivery-list"><div className="eyebrow">OVER BY OVER</div><h2>Innings · {innings?.batting}</h2>{overGroups.length ? overGroups.map(group => <article className="public-over-row" key={group.number}><div><b>Over {group.number}</b><small>{group.balls.reduce((sum, ball) => sum + ball.runs, 0)} runs</small></div><p>{group.balls.map((ball, i) => <span className={ball.wicket ? "wicket" : ""} key={i}>{ballLabel(ball)}</span>)}</p></article>) : <div className="empty-state">Ball-by-ball details will appear here.</div>}</section>}
     {tab === "Commentary" && <section className="panel public-delivery-list"><div className="eyebrow">BALL BY BALL</div><h2>Commentary</h2>{innings?.balls.length ? innings.balls.slice().reverse().map((ball, i) => <article className="public-commentary-row" key={`${i}-${ball.dismissed || ball.runs}`}><span className={`public-commentary-ball ${ball.wicket ? "wicket" : ""}`}>{ballLabel(ball)}</span><div><b>{ball.wicket ? `${ball.dismissed || "Wicket"} · ${ball.dismissal || "out"}` : ball.runs === 0 ? "Dot ball" : `${ball.runs} run${ball.runs === 1 ? "" : "s"}`}</b><p>{ball.wicket ? `Bowler: ${ball.beforeBowler || currentBowler}${ball.fielder ? ` · Fielder: ${ball.fielder}` : ""}` : `${ball.beforeStriker || innings.striker} · ${ball.beforeBowler || currentBowler}`}</p></div><small>{ball.beforeBowler || currentBowler}</small></article>) : <div className="empty-state">Commentary will appear after the first ball.</div>}</section>}
-    {tab === "Info" && <section className="panel public-info-panel"><div className="eyebrow">MATCH INFORMATION</div><h2>{match.teams[0]} <em>vs</em> {match.teams[1]}</h2><div className="public-info-grid"><div><span>FORMAT</span><b>{match.oversLimit} overs per side</b></div><div><span>STATUS</span><b>{statusLabel}</b></div><div><span>BATTING NOW</span><b>{innings?.batting || "—"}</b></div><div><span>INNINGS</span><b>{match.innings.length} of 2</b></div><div><span>RESULT</span><b>{resultText(match)}</b></div></div></section>}
+    {tab === "Info" && <section className="panel public-info-panel"><div className="eyebrow">MATCH INFORMATION</div><h2>{match.teams[0]} <em>vs</em> {match.teams[1]}</h2><div className="public-info-grid"><div><span>FORMAT</span><b>{match.oversLimit} overs per side</b></div><div><span>STATUS</span><b>{statusLabel}</b></div><div><span>BATTING NOW</span><b>{innings?.batting || "—"}</b></div><div><span>INNINGS</span><b>{innings?.superOver ? `Super Over ${innings.superOver}` : `${Math.min(match.innings.length, 2)} of 2`}</b></div><div><span>RESULT</span><b>{resultText(match)}</b></div></div></section>}
     <p className="public-view-only">Public scorecard · Read-only view</p>
   </div>;
 }
