@@ -141,6 +141,7 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 .brand-logo{display:block;width:clamp(118px,15vw,176px);height:66px;object-fit:contain;object-position:left center}
 @media(max-width:600px){.brand-logo{width:112px;height:52px}.topbar .brand-logo{width:112px;height:54px}}
 .site-header .primary-btn{width:auto;}
+
 /* Main Layout */
 .site-shell {
     min-height: 100vh;
@@ -152,8 +153,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 .site-shell .panel {
     width: 100%;
     max-width: 480px;
-    margin: 12vh auto;
-    padding: 36px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -288,13 +287,8 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 
 /* Mobile Responsive */
 @media (max-width: 576px) {
-    .site-shell {
-        padding: 1px 16px;
-    }
-
     .site-shell .panel {
         margin: 1vh auto;
-        padding: 26px 22px;
         border-radius: 12px;
     }
 
