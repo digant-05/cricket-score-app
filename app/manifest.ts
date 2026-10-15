@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Boundary — Cricket Scorer",
-    short_name: "Boundary",
+    name: "ScoreMitra — Cricket Scorer",
+    short_name: "ScoreMitra",
     description: "Follow live cricket scores and score matches ball by ball.",
     start_url: "/",
     scope: "/",

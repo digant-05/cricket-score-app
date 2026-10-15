@@ -11,5 +11,5 @@ export default async function PublicScorecardPage({ params }: { params: { token:
   } catch {
     scorecard = null;
   }
-  return <main className="shell public-scorecard-shell">{scorecard ? <Scorecard match={scorecard} /> : <section className="panel public-scorecard-error"><div className="eyebrow">BOUNDARY · PUBLIC SCORECARD</div><h1>Scorecard link unavailable</h1><p>This link is incomplete or invalid. Ask the scorer to create a fresh scorecard link.</p></section>}</main>;
+  return <main className="site-shell public-scorecard-shell"><header className="site-header"><a href="/" className="brand"><img className="brand-logo" src="/scoremitra-logo.png" alt="ScoreMitra Cricket Impact" /></a><a href="/">← All matches</a></header>{scorecard ? <Scorecard match={scorecard} /> : <section className="panel public-scorecard-error"><div className="eyebrow">SCOREMITRA · PUBLIC SCORECARD</div><h1>Scorecard link unavailable</h1><p>This link is incomplete or invalid. Ask the scorer to create a fresh scorecard link.</p></section>}</main>;
 }

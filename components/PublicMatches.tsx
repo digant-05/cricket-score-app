@@ -51,7 +51,7 @@ export default function PublicMatches() {
   ];
 
   return <main className="site-shell">
-    <header className="site-header"><a href="/" className="brand"><span className="brand-mark">b</span>boundary<span className="brand-dot">.</span><small>THE SCOREKEEPER</small></a><a className="primary-btn" href="/scorer">SCORER LOGIN <span>→</span></a></header>
+    <header className="site-header"><a href="/" className="brand"><img className="brand-logo" src="/scoremitra-logo.png" alt="ScoreMitra Cricket Impact" /></a><a className="primary-btn" href="/scorer">SCORER LOGIN <span>→</span></a></header>
     <section className="hero"><div className="eyebrow">PUBLIC SCOREBOARD · LOCAL CRICKET</div><h1>Every match.<br/><em>One scorebook.</em></h1><p>Follow live scores, see what’s coming up, and browse completed scorecards.</p></section>
     <section className="public-match-section">
       <div className="section-head"><div><div className="eyebrow">MATCH CENTRE</div><h2>Matches</h2></div><button className="team-cancel" onClick={() => void refresh()}>↻ Refresh</button></div>
