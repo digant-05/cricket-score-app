@@ -1,5 +1,16 @@
 import type { Metadata } from "next";
+import "@fontsource/outfit/400.css";
+import "@fontsource/outfit/500.css";
+import "@fontsource/outfit/600.css";
+import "@fontsource/outfit/700.css";
+import "@fontsource/outfit/800.css";
 import "./globals.css";
-export const metadata: Metadata = { title: "Boundary — Cricket Scorer", description: "A beautiful, simple ball-by-ball cricket scoring app." };
-export const viewport = { width: "device-width", initialScale: "1.0" as unknown as number };
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body>{children}</body></html>; }
+import { PwaRegister } from "../components/PwaRegister";
+export const metadata: Metadata = {
+  title: "Boundary — Cricket Scorer",
+  description: "A beautiful, simple ball-by-ball cricket scoring app.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Boundary" },
+};
+export const viewport = { width: "device-width", initialScale: "1.0" as unknown as number, themeColor: "#174d37" };
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en"><body><PwaRegister />{children}</body></html>; }
