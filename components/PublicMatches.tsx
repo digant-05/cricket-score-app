@@ -1,20 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
+import { TournamentTable, type Tournament } from "./TournamentManager";
 
 type Match = {
   id: string;
   createdAt: string;
   scheduledAt?: string;
   teams: [string, string];
-  innings: { runs: number; wickets: number; legal: number }[];
+  innings: { batting: string; runs: number; wickets: number; legal: number; superOver?: number }[];
   oversLimit: number;
   status: "upcoming" | "live" | "innings-break" | "complete";
+  tournamentId?: string;
+  playerOfMatch?: string;
 };
 type Filter = "all" | "live" | "upcoming" | "complete";
 const overs = (n: number) => `${Math.floor(n / 6)}.${n % 6}`;
 
 export default function PublicMatches() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -25,6 +29,8 @@ export default function PublicMatches() {
       if (!response.ok) throw new Error("Shared match list will appear after the app is deployed to Netlify.");
       const list = await response.json();
       setMatches(Array.isArray(list) ? list : []);
+      const tournamentResponse = await fetch("/api/data?view=public&resource=tournaments", { cache: "no-store" });
+      if (tournamentResponse.ok) { const competitionData = await tournamentResponse.json(); setTournaments(Array.isArray(competitionData.tournaments) ? competitionData.tournaments : []); }
       setProblem("");
     } catch (error) {
       setProblem(error instanceof Error ? error.message : "Could not load matches.");
@@ -53,6 +59,7 @@ export default function PublicMatches() {
   return <main className="site-shell">
     <header className="site-header"><a href="/" className="brand"><img className="brand-logo" src="/scoremitra-logo.png" alt="ScoreMitra Cricket Impact" /></a><a className="primary-btn" href="/scorer">SCORER LOGIN <span>→</span></a></header>
     <section className="hero"><div className="eyebrow">PUBLIC SCOREBOARD · LOCAL CRICKET</div><h1>Every match.<br/><em>One scorebook.</em></h1><p>Follow live scores, see what’s coming up, and browse completed scorecards.</p></section>
+    {tournaments.length > 0 && <section className="public-match-section"><div className="section-head"><div><div className="eyebrow">LEAGUE TABLES</div><h2>Tournaments</h2></div></div><div className="tournament-list">{tournaments.map(tournament => <TournamentTable key={tournament.id} tournament={tournament} matches={matches} publicView />)}</div></section>}
     <section className="public-match-section">
       <div className="section-head"><div><div className="eyebrow">MATCH CENTRE</div><h2>Matches</h2></div><button className="team-cancel" onClick={() => void refresh()}>↻ Refresh</button></div>
       <nav className="public-match-filters" aria-label="Filter matches">{options.map(option => <button key={option.id} className={filter === option.id ? "selected" : ""} onClick={() => setFilter(option.id)}>{option.label}<span>{option.count}</span></button>)}</nav>

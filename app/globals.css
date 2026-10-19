@@ -102,7 +102,7 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
   .action-row{gap:7px}
   .action-btn{height:46px;min-height:44px;font-size:10px;letter-spacing:.5px}
   .more-extras{min-height:42px;padding:9px 2px}
-  .app-nav{position:sticky;top:0;z-index:4;margin:0 0 12px;padding:10px 15px 8px;background:#f8f9f5f2;backdrop-filter:blur(12px);gap:4px}
+  .app-nav{position:sticky;top:0;z-index:4;margin:0 -15px 12px;padding:10px 15px 8px;background:#f8f9f5f2;backdrop-filter:blur(12px);gap:4px}
   .app-nav button{min-height:42px;padding:7px 3px;font-size:11px}
   .app-nav button span{margin-left:3px}
   .score-tabs{gap:18px;margin-top:15px;scrollbar-width:none}
@@ -141,7 +141,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 .brand-logo{display:block;width:clamp(118px,15vw,176px);height:66px;object-fit:contain;object-position:left center}
 @media(max-width:600px){.brand-logo{width:112px;height:52px}.topbar .brand-logo{width:112px;height:54px}}
 .site-header .primary-btn{width:auto;}
-
 /* Main Layout */
 .site-shell {
     min-height: 100vh;
@@ -153,6 +152,8 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 .site-shell .panel {
     width: 100%;
     max-width: 480px;
+    margin: 12vh auto;
+    padding: 36px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -286,9 +287,14 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 }
 
 /* Mobile Responsive */
-@media (max-width: 576px) {
+@media (max-width: 480px) {
+    .site-shell {
+        padding: 1px 16px;
+    }
+
     .site-shell .panel {
-        margin: 1vh auto;
+        margin: 8vh auto;
+        padding: 26px 22px;
         border-radius: 12px;
     }
 
@@ -301,117 +307,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
     }
 }
 
-
-/* Heading */
-.site-shell .panel h1 {
-    margin: 0 0 12px;
-    color: #0f172a;
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 1.25;
-}
-
-/* Description */
-.site-shell .panel > p {
-    margin: 0 0 24px;
-    font-size: 15px;
-    line-height: 1.7;
-}
-
-/* Form */
-.site-shell .panel form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.site-shell .panel form label {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    color: #334155;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
-
-/* Password Input */
-.site-shell .panel form input[type="password"] {
-    width: 100%;
-    min-height: 48px;
-    padding: 12px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #0f172a;
-    font-family: inherit;
-    font-size: 16px;
-    letter-spacing: normal;
-    outline: none;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.site-shell .panel form input[type="password"]:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-/* Submit Button */
-.site-shell .panel .primary-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-    min-height: 50px;
-    padding: 14px 18px;
-    border: none;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.site-shell .panel .primary-btn span {
-    font-size: 20px;
-    line-height: 1;
-}
-
-
-
-.site-shell .panel .primary-btn:active {
-    transform: scale(0.98);
-}
-
-/* Back Link */
-.site-shell .panel > p:last-child {
-    margin: 24px 0 0;
-    font-size: 14px;
-}
-
-.site-shell .panel a {
-    color: #475569;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-
-.site-shell .panel a:hover {
-    color: #2563eb;
-    text-decoration: underline;
-}
-
-/* Keyboard Accessibility */
-.site-shell .panel a:focus-visible,
-.site-shell .panel .primary-btn:focus-visible {
-    outline: 3px solid #93c5fd;
-    outline-offset: 3px;
-}
-
-.site-header .primary-btn{
-    width:auto;
-}
+.rotate-strike-btn{width:100%;margin:10px 0 5px;padding:10px 12px;border:1px solid #e2e9dd;border-radius:7px;background:#f5f8f0;color:#48653c;font:800 11px 'Outfit',sans-serif;letter-spacing:.7px;cursor:pointer}.rotate-strike-btn:hover{background:#eaf1e1}.rotate-strike-btn:disabled{opacity:.45;cursor:not-allowed}.award-panel{margin-top:14px}.award-panel h2{margin:5px 0;font-size:20px}.award-panel p{margin:0 0 13px;color:#879187;font-size:13px}.award-panel select,.series-award-label select{display:block;width:100%;max-width:420px;height:42px;margin-top:7px;padding:0 12px;border:1px solid #e2e9dd;border-radius:7px;background:white;color:#344537;font:500 14px 'Outfit',sans-serif}.award-result{color:#57733d!important;font-size:13px!important;margin:11px 0 0!important}.tournament-manager{display:grid;grid-template-columns:minmax(240px,.7fr) minmax(0,1.5fr);gap:16px;align-items:start}.tournament-manager .team-editor{position:sticky;top:15px}.tournament-manager select[multiple]{height:160px;padding:8px}.tournament-list{display:grid;gap:14px}.tournament-card{padding:20px}.tournament-card h2{margin:6px 0 14px;font-size:23px}.tournament-card table{min-width:420px}.tournament-card th,.tournament-card td{padding:10px 8px}.series-award-label{display:block;margin-top:15px;color:#889389;font-size:10px;font-weight:800;letter-spacing:.8px}.public-match-section .tournament-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr))}.public-match-section .tournament-card{height:100%}
+@media(max-width:760px){.tournament-manager{grid-template-columns:1fr}.tournament-manager .team-editor{position:static}.tournament-card{padding:17px 13px}.tournament-card table{min-width:390px}.award-panel select,.series-award-label select{max-width:none}}
+.tournament-team-field{border:0;padding:0;margin:13px 0;color:#818c82;font-size:10px;letter-spacing:1px;font-weight:800}.tournament-team-field legend{padding:0}.tournament-team-options{display:grid;gap:8px;margin-top:7px}.tournament-team-options label{display:flex;align-items:center;gap:9px;border:1px solid #e6ebe4;border-radius:7px;padding:10px 11px;color:#354139;font-size:13px;font-weight:500;letter-spacing:0;cursor:pointer}.tournament-team-options input{width:17px;height:17px;margin:0;accent-color:#527a3c}

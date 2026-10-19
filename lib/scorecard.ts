@@ -32,6 +32,7 @@ export type ScoreMatchInput = {
   oversLimit: number;
   innings: ScoreInningsInput[];
   status: "live" | "innings-break" | "complete";
+  playerOfMatch?: string;
 };
 
 export type BatterLine = { name: string; runs: number; balls: number; fours: number; sixes: number; dismissal: string };
@@ -50,7 +51,7 @@ export type ScorecardInnings = {
   yetToBat: string[];
   fallOfWickets: WicketFall[];
 };
-export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; innings: ScorecardInnings[] };
+export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; innings: ScorecardInnings[] };
 
 export const overText = (legal: number) => `${Math.floor(legal / 6)}.${legal % 6}`;
 
@@ -124,5 +125,5 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
       extras, yetToBat: input.squad.filter(name => !appeared.has(name) && name !== input.striker && name !== input.nonStriker && !input.dismissedBatters.includes(name)), fallOfWickets,
     };
   });
-  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, innings };
+  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, playerOfMatch: match.playerOfMatch, innings };
 }
