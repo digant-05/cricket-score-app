@@ -1,0 +1,8 @@
+.tournament-list{
+    display:block;
+}
+@media (max-width: 760px) {
+    .tournament-manager {
+        grid-template-columns: 1fr;
+    }
+}
