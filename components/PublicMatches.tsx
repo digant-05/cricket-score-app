@@ -24,6 +24,7 @@ export default function PublicMatches() {
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [viewStats, setViewStats] = useState({ totalViews: 0, liveViewers: 0 });
 
   async function refresh() {
     try {
@@ -40,6 +41,23 @@ export default function PublicMatches() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    let visitorId = sessionStorage.getItem("scoremitra-viewer-id");
+    if (!visitorId) { visitorId = crypto.randomUUID(); sessionStorage.setItem("scoremitra-viewer-id", visitorId); }
+    let viewId = sessionStorage.getItem("scoremitra-view-id");
+    const isNewView = !viewId;
+    if (!viewId) { viewId = crypto.randomUUID(); sessionStorage.setItem("scoremitra-view-id", viewId); }
+    const sendPresence = async (recordView: boolean) => {
+      try {
+        const response = await fetch("/api/views", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: recordView ? "visit" : "heartbeat", visitorId, ...(recordView ? { viewId } : {}) }) });
+        if (response.ok) setViewStats(await response.json());
+      } catch { /* Keep the scoreboard usable if analytics storage is unavailable. */ }
+    };
+    void sendPresence(isNewView);
+    const timer = setInterval(() => void sendPresence(false), 15_000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     void refresh();
@@ -59,7 +77,7 @@ export default function PublicMatches() {
   ];
 
   return <main className="site-shell">
-    <header className="site-header"><a href="/" className="brand"><img className="brand-logo" src="/scoremitra-logo.png" alt="ScoreMitra Cricket Impact" /></a><a className="primary-btn" href="/scorer">SCORER LOGIN <span>→</span></a></header>
+    <header className="site-header"><a href="/" className="brand"><img className="brand-logo" src="/scoremitra-logo.png" alt="ScoreMitra Cricket Impact" /></a><div className="site-view-stats" aria-live="polite"><span>TOTAL VIEWS: <b>{viewStats.totalViews.toLocaleString()}</b></span><span>LIVE VIEWERS: <b>{viewStats.liveViewers.toLocaleString()}</b></span></div><a className="primary-btn" href="/scorer">SCORER LOGIN <span>→</span></a></header>
     <section className="hero"><div className="eyebrow">PUBLIC SCOREBOARD · LOCAL CRICKET</div><h1>Every match.<br/><em>One scorebook.</em></h1><p>Follow live scores, see what’s coming up, and browse completed scorecards.</p></section>
     {tournaments.length > 0 && <section className="public-match-section"><div className="section-head"><div><div className="eyebrow">LEAGUE TABLES</div><h2>Tournaments</h2></div></div><div className="tournament-list">{tournaments.map(tournament => <TournamentTable key={tournament.id} tournament={tournament} matches={matches} publicView />)}</div></section>}
     <section className="public-match-section">
