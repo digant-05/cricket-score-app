@@ -1,3 +1,5 @@
+import { playerOfMatch as calculatePlayerOfMatch } from "./player-performance";
+
 export type ScoreBall = {
   runs: number;
   extra?: "wide" | "no-ball" | "bye" | "leg-bye";
@@ -51,7 +53,7 @@ export type ScorecardInnings = {
   yetToBat: string[];
   fallOfWickets: WicketFall[];
 };
-export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; innings: ScorecardInnings[] };
+export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; playerOfMatchPoints?: number; innings: ScorecardInnings[] };
 
 export const overText = (legal: number) => `${Math.floor(legal / 6)}.${legal % 6}`;
 
@@ -125,5 +127,6 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
       extras, yetToBat: input.squad.filter(name => !appeared.has(name) && name !== input.striker && name !== input.nonStriker && !input.dismissedBatters.includes(name)), fallOfWickets,
     };
   });
-  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, playerOfMatch: match.playerOfMatch, innings };
+  const matchAward = match.status === "complete" ? calculatePlayerOfMatch(match) : undefined;
+  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, playerOfMatch: matchAward?.name, playerOfMatchPoints: matchAward?.points, innings };
 }

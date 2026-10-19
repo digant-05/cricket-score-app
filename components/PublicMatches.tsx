@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { TournamentTable, type Tournament } from "./TournamentManager";
+import type { PerformanceBall } from "../lib/player-performance";
 
 type Match = {
   id: string;
   createdAt: string;
   scheduledAt?: string;
   teams: [string, string];
-  innings: { batting: string; runs: number; wickets: number; legal: number; superOver?: number }[];
+  innings: { batting: string; runs: number; wickets: number; legal: number; superOver?: number; balls: PerformanceBall[] }[];
   oversLimit: number;
   status: "upcoming" | "live" | "innings-break" | "complete";
   tournamentId?: string;
