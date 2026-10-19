@@ -8,6 +8,7 @@ type Match = {
   createdAt: string;
   scheduledAt?: string;
   teams: [string, string];
+  squads?: [string[], string[]];
   innings: { batting: string; runs: number; wickets: number; legal: number; superOver?: number; balls: PerformanceBall[] }[];
   oversLimit: number;
   status: "upcoming" | "live" | "innings-break" | "complete";

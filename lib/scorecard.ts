@@ -35,6 +35,8 @@ export type ScoreMatchInput = {
   innings: ScoreInningsInput[];
   status: "live" | "innings-break" | "complete";
   playerOfMatch?: string;
+  tossWinner?: string;
+  tossDecision?: "bat" | "bowl";
 };
 
 export type BatterLine = { name: string; runs: number; balls: number; fours: number; sixes: number; dismissal: string };
@@ -53,7 +55,7 @@ export type ScorecardInnings = {
   yetToBat: string[];
   fallOfWickets: WicketFall[];
 };
-export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; playerOfMatchPoints?: number; innings: ScorecardInnings[] };
+export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; playerOfMatchPoints?: number; tossWinner?: string; tossDecision?: "bat" | "bowl"; innings: ScorecardInnings[] };
 
 export const overText = (legal: number) => `${Math.floor(legal / 6)}.${legal % 6}`;
 
@@ -128,5 +130,5 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
     };
   });
   const matchAward = match.status === "complete" ? calculatePlayerOfMatch(match) : undefined;
-  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, playerOfMatch: matchAward?.name, playerOfMatchPoints: matchAward?.points, innings };
+  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, playerOfMatch: matchAward?.name, playerOfMatchPoints: matchAward?.points, tossWinner: match.tossWinner, tossDecision: match.tossDecision, innings };
 }

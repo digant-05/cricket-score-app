@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { playerPerformances, type PerformanceBall } from "../lib/player-performance";
 
 export type Tournament = { id: string; name: string; teams: string[] };
-type Match = { id: string; tournamentId?: string; status: string; teams: string[]; oversLimit: number; innings: { batting: string; runs: number; legal: number; superOver?: number; balls: PerformanceBall[] }[] };
+type Match = { id: string; tournamentId?: string; status: string; teams: string[]; squads?: string[][]; oversLimit: number; innings: { batting: string; runs: number; wickets?: number; legal: number; superOver?: number; balls: PerformanceBall[] }[] };
 type Team = { name: string; players: string[] };
 
 function tableRows(tournament: Tournament, matches: Match[]) {
@@ -14,7 +14,13 @@ function tableRows(tournament: Tournament, matches: Match[]) {
       const innings = match.innings.filter(item => item.superOver === undefined).slice(0, 2);
       const own = innings.find(item => item.batting === team), opposition = innings.find(item => item.batting !== team);
       if (!own || !opposition) continue;
-      played++; scored += own.runs; conceded += opposition.runs; ballsFor += own.legal; ballsAgainst += Math.min(opposition.legal, match.oversLimit * 6);
+      played++; scored += own.runs; conceded += opposition.runs;
+      const ownTeamIndex = match.teams.indexOf(team), oppositionIndex = match.teams.indexOf(opposition.batting);
+      const ownQuota = match.oversLimit * 6, oppositionQuota = match.oversLimit * 6;
+      const ownAllOut = (own.wickets || 0) >= Math.max(1, (match.squads?.[ownTeamIndex]?.length || 11) - 1);
+      const oppositionAllOut = (opposition.wickets || 0) >= Math.max(1, (match.squads?.[oppositionIndex]?.length || 11) - 1);
+      ballsFor += ownAllOut ? ownQuota : Math.min(own.legal, ownQuota);
+      ballsAgainst += oppositionAllOut ? oppositionQuota : Math.min(opposition.legal, oppositionQuota);
       let resultWinner: string | undefined = own.runs > opposition.runs ? team : own.runs < opposition.runs ? opposition.batting : undefined;
       if (own.runs === opposition.runs) { const superOvers = match.innings.filter(item => item.superOver !== undefined).slice(-2); if (superOvers.length === 2 && superOvers[0].runs !== superOvers[1].runs) resultWinner = superOvers[0].runs > superOvers[1].runs ? superOvers[0].batting : superOvers[1].batting; }
       if (resultWinner === team) { won++; points += 2; } else if (!resultWinner) { tied++; points++; }
@@ -29,7 +35,7 @@ export function TournamentTable({ tournament, matches, publicView = false }: { t
   const rows = tableRows(tournament, matches);
   const performances = playerPerformances(games);
   const seriesWinner = performances[0];
-  return <article className="panel tournament-card"><div className="eyebrow">{publicView ? "TOURNAMENT STANDINGS" : `TOURNAMENT · ${games.length} COMPLETED MATCHES`}</div><h2>{tournament.name}</h2><div className="table-scroll"><table><thead><tr><th>TEAM</th><th>P</th><th>W</th><th>T</th><th>NRR</th><th>PTS</th></tr></thead><tbody>{rows.map((row, index) => <tr key={row.team}><td><b>{index === 0 && row.played ? "♛ " : ""}{row.team}</b></td><td>{row.played}</td><td>{row.won}</td><td>{row.tied}</td><td>{row.nrr.toFixed(2)}</td><td><b>{row.points}</b></td></tr>)}</tbody></table></div>{seriesWinner && <div className="series-winner"><span>🏅 PLAYER OF THE SERIES</span><b>{seriesWinner.name}</b><small>{seriesWinner.points} MVP points</small></div>}<div className="mvp-board"><div className="eyebrow">MVP LEADERBOARD</div><p className="mvp-scoring-note">Scoring: 1 per run; +1 per four, +2 per six; +25 per bowler wicket; +8 per maiden; +10 per catch/stumping/run-out; strike-rate and economy adjustments.</p><div className="table-scroll"><table><thead><tr><th>#</th><th>PLAYER</th><th>MAT</th><th>RUN</th><th>WK</th><th>F</th><th>PTS</th></tr></thead><tbody>{performances.slice(0, 10).map((player, index) => <tr key={player.name}><td>{index + 1}</td><td><b>{player.name}</b></td><td>{player.matches}</td><td>{player.runs}</td><td>{player.wickets}</td><td>{player.fielding}</td><td><b>{player.points}</b></td></tr>)}</tbody></table></div>{!performances.length && <small className="mvp-empty">Leaderboard will populate after completed tournament matches.</small>}</div></article>;
+  return <article className="panel tournament-card"><div className="eyebrow">{publicView ? "TOURNAMENT STANDINGS" : `TOURNAMENT · ${games.length} COMPLETED MATCHES`}</div><h2>{tournament.name}</h2><div className="table-scroll"><table><thead><tr><th>TEAM</th><th>P</th><th>W</th><th>T</th><th>NRR</th><th>PTS</th></tr></thead><tbody>{rows.map((row, index) => <tr key={row.team}><td><b>{index === 0 && row.played ? "♛ " : ""}{row.team}</b></td><td>{row.played}</td><td>{row.won}</td><td>{row.tied}</td><td>{row.nrr.toFixed(2)}</td><td><b>{row.points}</b></td></tr>)}</tbody></table></div><small className="nrr-note">NRR = runs per over scored minus runs per over conceded. All-out innings use the full overs quota; Super Overs are excluded.</small>{seriesWinner && <div className="series-winner"><span>🏅 PLAYER OF THE SERIES</span><b>{seriesWinner.name}</b><small>{seriesWinner.points} MVP points</small></div>}<div className="mvp-board"><div className="eyebrow">MVP LEADERBOARD</div><p className="mvp-scoring-note">Scoring: 1 per run; +1 per four, +2 per six; +25 per bowler wicket; +8 per maiden; +10 per catch/stumping/run-out; strike-rate and economy adjustments.</p><div className="table-scroll"><table><thead><tr><th>#</th><th>PLAYER</th><th>MAT</th><th>RUN</th><th>WK</th><th>F</th><th>PTS</th></tr></thead><tbody>{performances.slice(0, 10).map((player, index) => <tr key={player.name}><td>{index + 1}</td><td><b>{player.name}</b></td><td>{player.matches}</td><td>{player.runs}</td><td>{player.wickets}</td><td>{player.fielding}</td><td><b>{player.points}</b></td></tr>)}</tbody></table></div>{!performances.length && <small className="mvp-empty">Leaderboard will populate after completed tournament matches.</small>}</div></article>;
 }
 
 export default function TournamentManager({ tournaments, matches, teams, name, selectedTeams, onName, onTeams, onCreate }: { tournaments: Tournament[]; matches: Match[]; teams: Team[]; name: string; selectedTeams: string[]; onName: (value: string) => void; onTeams: (values: string[]) => void; onCreate: (event: FormEvent<HTMLFormElement>) => void }) {

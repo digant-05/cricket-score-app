@@ -142,10 +142,18 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 @media(max-width:600px){.brand-logo{width:112px;height:52px}.topbar .brand-logo{width:112px;height:54px}}
 .site-header .primary-btn{width:auto;}
 /* Main Layout */
+.site-shell {
+    min-height: 100vh;
+    padding: 1px 20px;
+    color: #0f172a;
+}
 
 /* Sign In Panel */
 .site-shell .panel {
     width: 100%;
+    max-width: 480px;
+    margin: 12vh auto;
+    padding: 36px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -284,6 +292,11 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
         padding: 1px 16px;
     }
 
+    .site-shell .panel {
+        margin: 8vh auto;
+        padding: 26px 22px;
+        border-radius: 12px;
+    }
 
     .site-shell .panel h1 {
         font-size:28px;
@@ -298,3 +311,4 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 @media(max-width:760px){.tournament-manager{grid-template-columns:1fr}.tournament-manager .team-editor{position:static}.tournament-card{padding:17px 13px}.tournament-card table{min-width:390px}.award-panel select,.series-award-label select{max-width:none}}
 .tournament-team-field{border:0;padding:0;margin:13px 0;color:#818c82;font-size:10px;letter-spacing:1px;font-weight:800}.tournament-team-field legend{padding:0}.tournament-team-options{display:grid;gap:8px;margin-top:7px}.tournament-team-options label{display:flex;align-items:center;gap:9px;border:1px solid #e6ebe4;border-radius:7px;padding:10px 11px;color:#354139;font-size:13px;font-weight:500;letter-spacing:0;cursor:pointer}.tournament-team-options input{width:17px;height:17px;margin:0;accent-color:#527a3c}
 .series-winner{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:14px 0;padding:12px 13px;border:1px solid #e7efdc;border-radius:8px;background:#f5f8f0}.series-winner span{font-size:10px;font-weight:800;letter-spacing:.8px;color:#718565}.series-winner b{color:#314d35;font-size:14px}.series-winner small{color:#7f8a7c}.mvp-board{margin-top:18px;padding-top:16px;border-top:1px solid #e9ede7}.mvp-scoring-note{margin:6px 0 10px;font-size:11px;line-height:1.5;color:#899389}.mvp-board table{min-width:440px}.mvp-board th,.mvp-board td{padding:9px 7px}.mvp-empty{display:block;padding:11px 2px;color:#8d978c;font-size:12px}
+.nrr-note{display:block;color:#869185;font-size:11px;line-height:1.5;margin:5px 1px 10px}.scorecard-toss{font-size:12px!important;color:#768274!important;margin-top:7px!important}
