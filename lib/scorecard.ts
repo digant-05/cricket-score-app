@@ -2,7 +2,7 @@ import { playerOfMatch as calculatePlayerOfMatch } from "./player-performance";
 
 export type ScoreBall = {
   runs: number;
-  extra?: "wide" | "no-ball" | "bye" | "leg-bye";
+  extra?: "wide" | "no-ball" | "bye" | "leg-bye" | "bonus" | "penalty";
   wicket?: boolean;
   beforeStriker?: string;
   beforeNonStriker?: string;
@@ -32,6 +32,7 @@ export type ScoreMatchInput = {
   createdAt: string;
   teams: [string, string];
   oversLimit: number;
+  powerplayOvers?: number;
   innings: ScoreInningsInput[];
   status: "live" | "innings-break" | "complete";
   playerOfMatch?: string;
@@ -51,11 +52,11 @@ export type ScorecardInnings = {
   superOver?: number;
   batters: BatterLine[];
   bowlers: BowlerLine[];
-  extras: { total: number; byes: number; legByes: number; wides: number; noBalls: number };
+  extras: { total: number; byes: number; legByes: number; wides: number; noBalls: number; bonus: number; penalty: number };
   yetToBat: string[];
   fallOfWickets: WicketFall[];
 };
-export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; playerOfMatchPoints?: number; tossWinner?: string; tossDecision?: "bat" | "bowl"; innings: ScorecardInnings[] };
+export type ScorecardData = { id: string; createdAt: string; teams: [string, string]; oversLimit: number; powerplayOvers?: number; status: ScoreMatchInput["status"]; playerOfMatch?: string; playerOfMatchPoints?: number; tossWinner?: string; tossDecision?: "bat" | "bowl"; innings: ScorecardInnings[] };
 
 export const overText = (legal: number) => `${Math.floor(legal / 6)}.${legal % 6}`;
 
@@ -66,7 +67,7 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
     const bowlerOvers = new Map<string, { balls: number; runs: number }>();
     input.squad.forEach(name => batterMap.set(name, { name, runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: "did not bat" }));
     input.bowlingSquad.forEach(name => bowlerMap.set(name, { name, balls: 0, maidens: 0, runs: 0, wickets: 0, noBalls: 0, wides: 0 }));
-    let extras = { total: 0, byes: 0, legByes: 0, wides: 0, noBalls: 0 };
+    let extras = { total: 0, byes: 0, legByes: 0, wides: 0, noBalls: 0, bonus: 0, penalty: 0 };
     let totalRuns = 0;
     let totalWickets = 0;
     let legalBalls = 0;
@@ -76,13 +77,14 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
       const batter = batterMap.get(ball.beforeStriker || "");
       const bowler = bowlerMap.get(ball.beforeBowler || "");
       const legalDelivery = !ball.extra || ball.extra === "bye" || ball.extra === "leg-bye";
+      const delivery = ball.extra !== "bonus" && ball.extra !== "penalty";
       const bowlerOverKey = bowler ? `${bowler.name}:${Math.floor(legalBalls / 6)}` : "";
       const extraRuns = ball.extra === "wide" || ball.extra === "no-ball" ? 1 : 0;
-      const batRuns = ball.extra === "wide" || ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.extra === "no-ball" ? Math.max(0, ball.runs - 1) : ball.runs;
+      const batRuns = !delivery || ball.extra === "wide" || ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.extra === "no-ball" ? Math.max(0, ball.runs - 1) : ball.runs;
       if (ball.beforeStriker) appeared.add(ball.beforeStriker);
       if (ball.beforeNonStriker) appeared.add(ball.beforeNonStriker);
       if (batter) {
-        if (ball.extra !== "wide") batter.balls += 1;
+        if (delivery && ball.extra !== "wide") batter.balls += 1;
         batter.runs += batRuns;
         if (batRuns === 4) batter.fours += 1;
         if (batRuns === 6) batter.sixes += 1;
@@ -94,7 +96,7 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
         if (ball.extra === "wide") bowler.wides += 1;
         if (ball.extra === "no-ball") bowler.noBalls += 1;
       }
-      const conceded = ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.runs;
+      const conceded = !delivery || ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.runs;
       if (bowler) {
         bowler.runs += conceded;
         const over = bowlerOvers.get(bowlerOverKey) || { balls: 0, runs: 0 };
@@ -109,6 +111,8 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
         if (ball.extra === "leg-bye") extras.legByes += ball.runs;
         if (ball.extra === "wide") extras.wides += ball.runs;
         if (ball.extra === "no-ball") extras.noBalls += ball.runs;
+        if (ball.extra === "bonus") extras.bonus += ball.runs;
+        if (ball.extra === "penalty") extras.penalty += ball.runs;
       }
       totalRuns += ball.runs;
       if (ball.wicket) {
@@ -130,5 +134,5 @@ export function buildScorecard(match: ScoreMatchInput): ScorecardData {
     };
   });
   const matchAward = match.status === "complete" ? calculatePlayerOfMatch(match) : undefined;
-  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, status: match.status, playerOfMatch: matchAward?.name, playerOfMatchPoints: matchAward?.points, tossWinner: match.tossWinner, tossDecision: match.tossDecision, innings };
+  return { id: match.id, createdAt: match.createdAt, teams: match.teams, oversLimit: match.oversLimit, powerplayOvers: match.powerplayOvers, status: match.status, playerOfMatch: matchAward?.name, playerOfMatchPoints: matchAward?.points, tossWinner: match.tossWinner, tossDecision: match.tossDecision, innings };
 }

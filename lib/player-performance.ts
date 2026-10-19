@@ -1,6 +1,6 @@
 export type PerformanceBall = {
   runs: number;
-  extra?: "wide" | "no-ball" | "bye" | "leg-bye";
+  extra?: "wide" | "no-ball" | "bye" | "leg-bye" | "bonus" | "penalty";
   wicket?: boolean;
   beforeStriker?: string;
   beforeBowler?: string;
@@ -32,9 +32,9 @@ export function playerPerformances(matches: PerformanceMatch[]): PlayerPerforman
         const striker = ball.beforeStriker;
         if (striker) {
           const bat = batStats.get(striker) || { runs: 0, balls: 0, fours: 0, sixes: 0 };
-          const batRuns = ball.extra === "wide" || ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.extra === "no-ball" ? Math.max(0, ball.runs - 1) : ball.runs;
+          const batRuns = ball.extra === "bonus" || ball.extra === "penalty" || ball.extra === "wide" || ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.extra === "no-ball" ? Math.max(0, ball.runs - 1) : ball.runs;
           bat.runs += batRuns;
-          if (ball.extra !== "wide") bat.balls++;
+          if (ball.extra !== "wide" && ball.extra !== "bonus" && ball.extra !== "penalty") bat.balls++;
           if (batRuns === 4) bat.fours++;
           if (batRuns === 6) bat.sixes++;
           batStats.set(striker, bat);
@@ -45,7 +45,7 @@ export function playerPerformances(matches: PerformanceMatch[]): PlayerPerforman
         if (bowlerName) {
           const bowler = bowlStats.get(bowlerName) || { legal: 0, conceded: 0, wickets: 0, overs: new Map<number, { legal: number; conceded: number }>() };
           const over = bowler.overs.get(overNo) || { legal: 0, conceded: 0 };
-          const conceded = ball.extra === "bye" || ball.extra === "leg-bye" ? 0 : ball.runs;
+          const conceded = ball.extra === "bye" || ball.extra === "leg-bye" || ball.extra === "bonus" || ball.extra === "penalty" ? 0 : ball.runs;
           bowler.conceded += conceded; over.conceded += conceded;
           if (legal) { bowler.legal++; over.legal++; }
           if (ball.wicket && !["Run out", "Retired out"].includes(ball.dismissal || "")) bowler.wickets++;
