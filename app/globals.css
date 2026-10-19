@@ -142,24 +142,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 @media(max-width:600px){.brand-logo{width:112px;height:52px}.topbar .brand-logo{width:112px;height:54px}}
 .site-header .primary-btn{width:auto;}
 /* Main Layout */
-.site-shell {
-    min-height: 100vh;
-    padding: 1px 20px;
-    color: #0f172a;
-}
-
-/* Sign In Panel */
-.site-shell .panel {
-    width: 100%;
-    max-width: 480px;
-    margin: 12vh auto;
-    padding: 36px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
-    box-sizing: border-box;
-}
 
 /* Eyebrow Text */
 .site-shell .eyebrow {
@@ -290,12 +272,6 @@ button,input,select,textarea{font-family:"Outfit",sans-serif}
 @media (max-width: 480px) {
     .site-shell {
         padding: 1px 16px;
-    }
-
-    .site-shell .panel {
-        margin: 8vh auto;
-        padding: 26px 22px;
-        border-radius: 12px;
     }
 
     .site-shell .panel h1 {
